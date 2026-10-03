@@ -2,6 +2,8 @@
 
 A full-stack trip planner built with **Django 5.2, React, TypeScript and Leaflet**. Enter a current location, pickup, drop-off and current cycle hours to generate a real road route, a duty schedule, and printable daily log sheets.
 
+**Live app:** [haulplan-assessment.vercel.app](https://haulplan-assessment.vercel.app)
+
 ## Features
 
 - Free Photon location search, OSRM route geometry and turn-by-turn instructions, and OpenStreetMap map tiles.
@@ -14,7 +16,7 @@ A full-stack trip planner built with **Django 5.2, React, TypeScript and Leaflet
 
 ## Run locally
 
-Requires **Node 22.12+** and **Python 3.12+**.
+Requires **Node 24** and **Python 3.12+**.
 
 ```sh
 npm ci
