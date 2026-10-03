@@ -27,6 +27,7 @@ export type Plan = {
   };
 };
 export const eventNames: Record<string, string> = {
+  off_duty: 'Off duty',
   drive: 'Driving', inspection: 'Pre-trip inspection', pickup: 'Pick up cargo', dropoff: 'Deliver cargo',
   fuel: 'Fuel stop', break: '30-minute break', rest: '10-hour rest', restart: '34-hour cycle restart',
 };

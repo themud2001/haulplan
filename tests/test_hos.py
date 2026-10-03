@@ -61,6 +61,9 @@ class HoursOfServiceTests(unittest.TestCase):
         self.assertEqual(summary['rest_stops'], 0)
         self.assertEqual([e['duration_minutes'] for e in events if e['kind'] in ('pickup', 'dropoff')], [60, 60])
         self.assert_legal(events, 0)
+        log = daily_logs(events, self.departure)[-1]
+        self.assertEqual(log['remarks'][-1]['kind'], 'off_duty')
+        self.assertAlmostEqual(log['remarks'][-1]['minute'], 735)
 
     def test_eight_hours_requires_break_before_more_driving(self):
         events, _ = schedule(legs(550, 0), 0, self.departure)

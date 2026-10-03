@@ -138,6 +138,8 @@ def daily_logs(events, departure):
             cursor = b
         if cursor < high - EPS:
             segments.append({'status': 'off_duty', 'start_min': cursor - low, 'end_min': 1440})
+            remarks.append({'minute': cursor - low, 'kind': 'off_duty',
+                            'status': 'off_duty', 'location': events[-1]['location']})
         totals = {key: round(sum(s['end_min'] - s['start_min'] for s in segments if s['status'] == key) / 60, 6)
                   for key in ('off_duty', 'sleeper', 'driving', 'on_duty')}
         logs.append({'date': (midnight + timedelta(days=day)).date().isoformat(),

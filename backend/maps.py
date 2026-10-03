@@ -116,7 +116,8 @@ def locate_events(route, events):
                                    route['locations'][2]['label'] if abs(event['mile_start'] - total_miles) < 0.01 else
                                    f"Route mile {event['mile_start']:.1f} ({event['coordinate'][1]:.3f}, {event['coordinate'][0]:.3f})")
         if event['kind'] == 'drive':
-            event['end_location'] = event['location']
+            if event['location'].startswith('Route mile'):
+                event['location'] = f"Route mile {event['mile_end']:.1f} ({event['end_coordinate'][1]:.3f}, {event['end_coordinate'][0]:.3f})"
         else:
             event['location'] = event['start_location']
 
