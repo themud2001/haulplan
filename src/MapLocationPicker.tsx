@@ -37,13 +37,13 @@ export default function MapLocationPicker({ label, letter, initialPlace, onChoos
     element.showModal();
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
-    const leaflet = L.map(container.current, { zoomControl: false, minZoom: 3, maxBounds: [[15, -140], [60, -50]] });
+    const leaflet = L.map(container.current, { zoomControl: false, minZoom: 2, zoomSnap: 0.25, maxBounds: [[15, -140], [60, -50]] });
     map.current = leaflet;
     L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap contributors</a>', maxZoom: 19,
     }).addTo(leaflet);
     L.control.zoom({ position: 'bottomright' }).addTo(leaflet);
-    leaflet.setView(initialPlace ? [initialPlace.lat, initialPlace.lon] : [38.3, -95.6], initialPlace ? 12 : 4);
+    leaflet.fitBounds([[24, -125], [50, -66]], { padding: [18, 18] });
     leaflet.on('click', (event: L.LeafletMouseEvent) => pick(event.latlng.lat, event.latlng.lng));
     const observer = new ResizeObserver(() => leaflet.invalidateSize());
     observer.observe(container.current);
