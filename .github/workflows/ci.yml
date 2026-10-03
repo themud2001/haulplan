@@ -1,4 +1,4 @@
-name: Verify assessment
+name: Verify Haulplan
 on:
   push:
   pull_request:

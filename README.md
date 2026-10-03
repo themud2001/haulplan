@@ -2,7 +2,7 @@
 
 A full-stack trip planner built with **Django 5.2, React, TypeScript and Leaflet**. Enter a current location, pickup, drop-off and current cycle hours to generate a real road route, a duty schedule, and printable daily log sheets.
 
-**Live app:** [haulplan-assessment.vercel.app](https://haulplan-assessment.vercel.app)
+**Live app:** [haulplan.vercel.app](https://haulplan.vercel.app)
 
 ## Features
 
@@ -47,7 +47,7 @@ The tests independently replay schedules to check driving windows, breaks, cycle
 
 Import this repository into Vercel. Use the **Vite** framework preset, repository root, `npm run build`, and `dist` output. `vercel.json` routes `/api/*` to the Django WSGI function in `api/index.py`; Vercel installs the pinned Python dependencies from `requirements.txt`.
 
-The API is stateless, with no accounts, sessions or durable database. Per-instance in-memory caching limits repeat map requests. Set `DJANGO_SECRET_KEY` if extending the app with authentication, sessions or signing. No secret is required for the assessment’s stateless calculation API.
+The API is stateless, with no accounts, sessions or durable database. Per-instance in-memory caching limits repeat map requests. Set `DJANGO_SECRET_KEY` if extending the app with authentication, sessions or signing. No secret is required for the stateless calculation API.
 
 ### API
 
@@ -86,5 +86,3 @@ vercel.json          Vite + Python deployment configuration
 - [OSRM API](https://project-osrm.org/docs/v5.24.0/api/)
 - [Photon](https://github.com/komoot/photon)
 - [Vercel Python runtime](https://vercel.com/docs/functions/runtimes/python)
-
-The assessment’s Loom walkthrough is recorded and submitted separately by the developer.

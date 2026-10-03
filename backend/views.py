@@ -36,7 +36,7 @@ def validate(data):
         except (ValueError, TypeError, KeyError):
             raise ValueError(f'Choose a valid {key} location.')
         if not (math.isfinite(lat) and math.isfinite(lon) and 24 <= lat <= 50 and -125 <= lon <= -66):
-            raise ValueError('This assessment supports routes within the contiguous United States.')
+            raise ValueError('Haulplan supports routes within the contiguous United States.')
         locations.append({'label': place['label'], 'lat': lat, 'lon': lon})
     try:
         value = data['cycle_used']
