@@ -46,6 +46,25 @@ def search_places(query):
     return places
 
 
+def reverse_place(lat, lon):
+    # Cache the address, never the coordinates: routing must use the exact pin.
+    key = f'reverse:{lat:.5f}:{lon:.5f}'
+    label = cache.get(key)
+    if label is None:
+        data = get_json('https://photon.komoot.io/reverse', {'lat': lat, 'lon': lon, 'limit': 1, 'lang': 'en'})
+        features = data.get('features', [])
+        prop = features[0].get('properties', {}) if features else {}
+        if prop.get('countrycode') and prop['countrycode'].upper() != 'US':
+            raise ValueError('Choose a point within the contiguous United States.')
+        street = ' '.join(str(p) for p in (prop.get('housenumber'), prop.get('street')) if p)
+        parts = [prop.get('name'), street, prop.get('city') or prop.get('district'), prop.get('state')]
+        label = ', '.join(dict.fromkeys(p for p in parts if p))[:250]
+        if not label:
+            label = f'Pinned location ({lat:.5f}, {lon:.5f})'
+        cache.set(key, label, 86400)
+    return {'label': label, 'lat': lat, 'lon': lon}
+
+
 def get_route(locations):
     coordinates = ';'.join(f"{p['lon']:.6f},{p['lat']:.6f}" for p in locations)
     key = 'route:' + coordinates

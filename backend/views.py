@@ -4,7 +4,7 @@ from datetime import datetime
 from django.http import JsonResponse
 from django.views.decorators.http import require_GET, require_POST
 from .hos import schedule, daily_logs
-from .maps import search_places, get_route, locate_events, MapServiceError
+from .maps import search_places, reverse_place, get_route, locate_events, MapServiceError
 
 
 @require_GET
@@ -19,6 +19,22 @@ def geocode(request):
         return JsonResponse({'error': 'Enter a US city or address with 3–200 characters.'}, status=400)
     try:
         return JsonResponse({'places': search_places(query)})
+    except MapServiceError as exc:
+        return JsonResponse({'error': str(exc)}, status=502)
+
+
+@require_GET
+def reverse_geocode(request):
+    try:
+        lat, lon = float(request.GET.get('lat', '')), float(request.GET.get('lon', ''))
+        if not (math.isfinite(lat) and math.isfinite(lon) and 24 <= lat <= 50 and -125 <= lon <= -66):
+            raise ValueError()
+    except (ValueError, TypeError):
+        return JsonResponse({'error': 'Choose a point within the contiguous United States.'}, status=400)
+    try:
+        return JsonResponse({'place': reverse_place(lat, lon)})
+    except ValueError as exc:
+        return JsonResponse({'error': str(exc)}, status=400)
     except MapServiceError as exc:
         return JsonResponse({'error': str(exc)}, status=502)
 

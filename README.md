@@ -11,6 +11,7 @@ A full-stack trip planner built with **Django 5.2, React, TypeScript and Leaflet
 ## Features
 
 - Free Photon location search, OSRM route geometry and turn-by-turn instructions, and OpenStreetMap map tiles.
+- Choose current, pickup, and drop-off locations directly on a map: click to drop a pin, drag to refine it, or select the map center with the keyboard. Nearby addresses fill automatically, while routing keeps the exact selected coordinates.
 - Both current → pickup and pickup → drop-off legs, with geographic fuel/rest/break pins.
 - Property-carrier scheduling: 11-hour driving limit, 14-hour window, 30-minute interruption after 8 cumulative driving hours, 10-hour daily rest, and conservative 70-hour cycle accounting with 34-hour restarts.
 - Fueling at least every 1,000 miles, 1 hour each for loading/unloading, and 15-minute pre-trip inspections.

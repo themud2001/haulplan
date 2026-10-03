@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import LocationInput from './LocationInput';
 import RouteMap from './RouteMap';
+import MapLocationPicker from './MapLocationPicker';
 import LogSheet, { type DriverDetails } from './LogSheet';
 import { type Place, type Plan, type TripEvent, eventNames, formatDate, formatDuration, formatTime } from './types';
 
@@ -36,9 +37,10 @@ export default function App() {
   const [tab, setTab] = useState<'overview' | 'logs'>('overview');
   const [logIndex, setLogIndex] = useState(0);
   const [selected, setSelected] = useState<number | null>(null);
+  const [mapPickIndex, setMapPickIndex] = useState<number | null>(null);
   const [itineraryTab, setItineraryTab] = useState<'stops' | 'directions'>('stops');
   const help = useRef<HTMLDialogElement>(null);
-  const visiblePlaces = useMemo(() => places.filter((p): p is Place => !!p), [places]);
+  const visiblePlaces = useMemo(() => places.map((place, index) => place ? { ...place, index } : null).filter((p): p is Place & { index: number } => !!p), [places]);
   const selectEvent = useCallback((id: number) => setSelected(id), []);
   const updateText = (index: number, value: string) => {
     setTexts(old => old.map((text, i) => i === index ? value : text));
@@ -109,7 +111,7 @@ export default function App() {
           <div className="planner-grid">
             <section className="card form-card"><div className="card-title"><div><h2>Trip details</h2><p>Where are we headed?</p></div><Truck size={21} /></div>
               <form onSubmit={generate}>
-                <div className="location-fields">{texts.map((text, index) => <LocationInput key={index} label={inputNames[index]} letter={String.fromCharCode(65 + index)} value={text} onChange={value => updateText(index, value)} onChoose={place => choosePlace(index, place)} disabled={loading} />)}</div>
+                <div className="location-fields">{texts.map((text, index) => <LocationInput key={index} label={inputNames[index]} letter={String.fromCharCode(65 + index)} value={text} onChange={value => updateText(index, value)} onChoose={place => choosePlace(index, place)} onMapPick={() => setMapPickIndex(index)} disabled={loading} />)}</div>
                 <div className="form-divider" />
                 <div className="cycle-label"><label htmlFor="cycle">Current cycle used</label><span>of 70 hours</span></div>
                 <div className="number-box"><Clock3 size={17} /><input id="cycle" type="number" min="0" max="70" step="0.01" required value={cycle} disabled={loading} onChange={event => { setCycle(event.target.value); setDirty(true); }} /><span>hours</span></div>
@@ -123,12 +125,12 @@ export default function App() {
               </form>
             </section>
             <section className="card map-card"><div className="map-heading"><div><span className="section-dot" /><h2>Route overview</h2></div><span className={`map-status ${plan && !dirty ? 'ready' : ''}`}>{loading ? 'Calculating route' : plan ? dirty ? 'Inputs changed' : 'Trip planned' : 'Ready to plan'}</span></div>
-              <div className="map-container"><RouteMap plan={plan} places={visiblePlaces} selected={selected} onSelect={selectEvent} />
+              <div className="map-container"><RouteMap plan={dirty ? null : plan} places={visiblePlaces} selected={selected} onSelect={selectEvent} />
                 {!plan && !loading && <div className="map-prompt"><span className="prompt-icon"><Navigation size={22} /></span><div><strong>Your journey starts here</strong><p>Add your stops. We’ll take care of the plan.</p></div></div>}
                 {loading && <div className="map-loading" role="status"><LoaderCircle className="spin" size={28} /><strong>Finding your way</strong><span>Mapping the route and scheduling your breaks…</span></div>}
                 <div className="map-key"><span><i className="legend-route" />Route</span><span><i className="legend-fuel" />Fuel</span><span><i className="legend-rest" />Rest / break</span></div>
               </div>
-              <div className="route-endpoints">{(plan?.route.locations || initialPlaces).map((place, i) => <div key={i}><span className={`endpoint-letter endpoint-${i}`}>{String.fromCharCode(65 + i)}</span><div><span>{['Starting point', 'Pickup', 'Drop-off'][i]}</span><strong>{plan ? place.label.split(',')[0] : texts[i].split(',')[0] || 'Choose location'}</strong></div>{i < 2 && <ArrowRight size={16} />}</div>)}</div>
+              <div className="route-endpoints">{texts.map((text, i) => <div key={i}><span className={`endpoint-letter endpoint-${i}`}>{String.fromCharCode(65 + i)}</span><div><span>{['Starting point', 'Pickup', 'Drop-off'][i]}</span><strong>{text.split(',')[0] || 'Choose location'}</strong></div>{i < 2 && <ArrowRight size={16} />}</div>)}</div>
             </section>
           </div>
           <div className="stats-grid">
@@ -154,6 +156,7 @@ export default function App() {
       </main>
     </div>
     {plan && <div className="print-only">{plan.logs.map(log => <LogSheet key={log.date} log={log} locations={plan.route.locations} details={details} />)}</div>}
+    {mapPickIndex !== null && <MapLocationPicker label={inputNames[mapPickIndex]} letter={String.fromCharCode(65 + mapPickIndex)} initialPlace={places[mapPickIndex]} onCancel={() => setMapPickIndex(null)} onChoose={place => { choosePlace(mapPickIndex, place); setMapPickIndex(null); }} />}
     <dialog ref={help} className="help-dialog no-print"><button className="dialog-close icon-button" aria-label="Close guide" onClick={() => help.current?.close()}><X size={21} /></button><span className="eyebrow">THE PLANNING GUIDE</span><h2>A little context for the road.</h2><p>Enter your current location, pickup, drop-off and cycle hours. Haulplan maps both legs, schedules work and breaks, then draws a 24-hour log for each trip day.</p><div className="rules-grid">{[['11h', 'Driving per shift'], ['14h', 'Driving window'], ['30m', 'Break after 8h driving'], ['10h', 'Daily reset'], ['70h', '8-day cycle'], ['34h', 'Cycle restart']].map(([value, name]) => <div key={value}><strong>{value}</strong><span>{name}</span></div>)}</div><h3>Planning assumptions</h3><ul>{(plan?.assumptions || [
       'Property carrier on a 70-hour / 8-day cycle, with no adverse driving conditions or split-sleeper exceptions.',
       'Start with a fresh driving shift after 10 hours off duty and a full fuel tank.',

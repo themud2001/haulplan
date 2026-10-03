@@ -4,7 +4,7 @@ import type { Place, Plan, TripEvent } from './types';
 import { eventNames, formatDate, formatDuration, formatTime } from './types';
 
 export default function RouteMap({ plan, places, selected, onSelect }: {
-  plan: Plan | null; places: Place[]; selected: number | null; onSelect: (id: number) => void;
+  plan: Plan | null; places: (Place & { index: number })[]; selected: number | null; onSelect: (id: number) => void;
 }) {
   const container = useRef<HTMLDivElement>(null);
   const map = useRef<L.Map | null>(null);
@@ -47,7 +47,7 @@ export default function RouteMap({ plan, places, selected, onSelect }: {
       }
       marker.bindPopup(content);
     };
-    const locations = plan ? plan.route.locations : places;
+    const locations = plan ? plan.route.locations.map((place, index) => ({ ...place, index })) : places;
     if (plan) {
       const polyline = L.polyline(plan.route.geometry.coordinates.map(c => [c[1], c[0]] as [number, number]), {
         color: '#527257', weight: 5, opacity: 0.95,
@@ -61,7 +61,7 @@ export default function RouteMap({ plan, places, selected, onSelect }: {
           e.kind === 'fuel' ? 'fuel' : 'rest', eventNames[e.kind], e));
       if (polyline.getBounds().isValid()) map.current.fitBounds(polyline.getBounds(), { padding: [45, 45], maxZoom: 10 });
     }
-    locations.forEach((p, i) => addMarker([p.lon, p.lat], String.fromCharCode(65 + i), `point point-${i}`, p.label));
+    locations.forEach(p => addMarker([p.lon, p.lat], String.fromCharCode(65 + p.index), `point point-${p.index}`, p.label));
     if (!plan && locations.length) map.current.fitBounds(L.latLngBounds(locations.map(p => [p.lat, p.lon])), { padding: [60, 70], maxZoom: 7 });
   }, [plan, places, onSelect]);
 
