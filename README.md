@@ -1,8 +1,12 @@
 # Haulplan
 
-A full-stack trip planner built with **Django 5.2, React, TypeScript and Leaflet**. Enter a current location, pickup, drop-off and current cycle hours to generate a real road route, a duty schedule, and printable daily log sheets.
-
 **Live app:** [haulplan.vercel.app](https://haulplan.vercel.app)
+
+![Haulplan trip planner with a mapped route, rest stop, and trip schedule](docs/screenshots/trip-planner.jpg)
+
+![Haulplan daily driver log with a duty graph, totals, and remarks](docs/screenshots/daily-log.jpg)
+
+A full-stack trip planner built with **Django 5.2, React, TypeScript and Leaflet**. Enter a current location, pickup, drop-off and current cycle hours to generate a real road route, a duty schedule, and printable daily log sheets.
 
 ## Features
 
